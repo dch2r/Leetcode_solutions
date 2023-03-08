@@ -1,20 +1,31 @@
 class Solution {
-    private int[] p;
-    private boolean canEat(int H, int K){
-        int res = 0;
-        for(int pp : p){
-            res += ((pp / K) + (((pp % K) == 0) ? 0: 1));
-        }
-        return res <= H;
-    }
     public int minEatingSpeed(int[] piles, int H) {
-        this.p = piles;
-        int slow = 1, fast = 1000000000;
-        while(slow <= fast){
-            int mid = slow + (fast - slow) / 2;
-            if(canEat(H, mid)) fast = mid - 1;
-            else slow = mid + 1;
+        
+        int start = 1, end = 1_000_000_000;
+        int max = end;
+        
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            int count = calc(piles, mid);
+            if (count > H) start = mid;
+            else {
+                if (mid + 1 < max && calc(piles, mid + 1) <= H) {
+                    end = mid;
+                    continue;
+                }
+                return start;
+            }
         }
-        return slow;
+        
+        if (calc(piles, start) <= H) return start;
+        return end;
+    }
+    
+    private int calc(int[] piles, double k) {
+        int count = 0;
+        for (int i : piles) {
+            count += Math.ceil(i / k);
+        }
+        return count;
     }
 }
